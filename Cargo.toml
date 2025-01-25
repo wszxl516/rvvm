@@ -12,10 +12,10 @@ name = "rvvm-test"
 path = "src/bin/main.rs"
 
 [dependencies]
-tokio = { version = "1.42.0", features = ["full"] }
-anyhow = "1.0.94"
-serde = { version = "1.0.204", features = ["derive"] }
+tokio = { version = "1.43.0", features = ["full"] }
+anyhow = "1.0.95"
+serde = { version = "1.0.217", features = ["derive"] }
 riscv = {path = "./riscv"}
-thiserror = "2.0.9"
-colored = "2.2.0"
+thiserror = "2.0.10"
+colored = "3.0.0"
 clap = {version = "4.5.23", features = ["derive"]}
