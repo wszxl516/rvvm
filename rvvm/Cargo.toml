@@ -1,0 +1,20 @@
+[package]
+name = "rvvm-rs"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name="rvvm"
+path = "src/lib.rs"
+
+[[bin]]
+name = "rvvm-test"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1.0.95"
+serde = { version = "1.0.217", features = ["derive"] }
+riscv = {path = "../riscv"}
+thiserror = "2.0.10"
+colored = "3.0.0"
+clap = {version = "4.5.23", features = ["derive"]}
