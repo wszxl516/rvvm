@@ -3,7 +3,6 @@ use std::fmt::{Display, Formatter, Result};
 use super::Cpu;
 use super::Generic;
 use super::OperationError;
-use super::cpu::Gsr;
 use super::syscall::Sysno;
 use colored::Colorize;
 pub struct SyscallArgs {
@@ -20,17 +19,17 @@ impl Display for SyscallArgs {
     }
 }
 impl SyscallArgs {
-    pub fn from_register(reg: &Gsr) -> Self {
+    pub fn from_register(cpu: &Cpu) -> Self {
         SyscallArgs {
-            no: Sysno::from(reg.get(Generic::a7) as u64),
+            no: Sysno::from(cpu.get_generic(Generic::a7) as u64),
             args: [
-                reg.get(Generic::a0),
-                reg.get(Generic::a1),
-                reg.get(Generic::a2),
-                reg.get(Generic::a3),
-                reg.get(Generic::a4),
-                reg.get(Generic::a5),
-                reg.get(Generic::a6),
+                cpu.get_generic(Generic::a0) as usize,
+                cpu.get_generic(Generic::a1) as usize,
+                cpu.get_generic(Generic::a2) as usize,
+                cpu.get_generic(Generic::a3) as usize,
+                cpu.get_generic(Generic::a4) as usize,
+                cpu.get_generic(Generic::a5) as usize,
+                cpu.get_generic(Generic::a6) as usize,
             ],
         }
     }
@@ -39,9 +38,8 @@ impl SyscallArgs {
     }
 }
 pub fn syscall_handler(cpu: &mut Cpu) -> anyhow::Result<(), OperationError> {
-    let reg = &mut cpu.x;
+    let syscall = SyscallArgs::from_register(cpu);
     let mem = &mut cpu.mem;
-    let syscall = SyscallArgs::from_register(reg);
     println!("{}", format!("Syscall: {}", syscall.no).blue().bold());
     match syscall.no {
         Sysno::write => {
@@ -50,7 +48,7 @@ pub fn syscall_handler(cpu: &mut Cpu) -> anyhow::Result<(), OperationError> {
                 "    {}",
                 format!("{:?}", String::from_utf8_lossy(data)).green()
             );
-            reg.set(Generic::a0, 0);
+            cpu.set_generic(Generic::a0, 0);
         }
         Sysno::exit => {
             println!(

@@ -3,6 +3,7 @@ ENTRY(_start);
 SECTIONS {
 	. = 0;
 	.text : ALIGN(16) {
+		KEEP(*(.init))
 		*(.text);
 	}
 	.data : ALIGN(16) {

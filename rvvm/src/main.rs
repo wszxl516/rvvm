@@ -27,7 +27,7 @@ fn main() -> anyhow::Result<()> {
     let mut mem = Memory::new(0usize..=buffer.len());
     mem.init_from(&buffer)?;
     let mut c = Cpu::new(mem);
-    c.set_pc(args.offset);
+    c.set_pc(args.offset as isize);
     c.set_debug(args.verbose);
     c.run();
     Ok(())

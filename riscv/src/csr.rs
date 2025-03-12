@@ -1,7 +1,7 @@
 use core::fmt;
 
 #[repr(transparent)]
-#[derive(Clone, Copy, PartialEq, Eq)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct Csr(pub u16);
 
 // We want these to look like as enum values, so keep cases like this.

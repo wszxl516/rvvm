@@ -55,22 +55,12 @@ crate::impl_numeric_enum! {
     ]
 }
 
-impl From<usize> for Generic {
-    fn from(value: usize) -> Self {
-        Generic::from(value as u8)
-    }
-}
-impl From<Generic> for usize {
-    fn from(value: Generic) -> Self {
-        u8::from(value) as _
-    }
-}
 
 crate::impl_numeric_enum! {
     u8,
     #[allow(non_camel_case_types)]
     #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-    pub Fcsr [
+    pub Float [
         f0 = 0,
         f1 = 1,
         f2 = 2,
@@ -104,15 +94,4 @@ crate::impl_numeric_enum! {
         f30 = 30,
         f31 = 31
     ]
-}
-
-impl From<usize> for Fcsr {
-    fn from(value: usize) -> Self {
-        Fcsr::from(value as u8)
-    }
-}
-impl From<Fcsr> for usize {
-    fn from(value: Fcsr) -> Self {
-        u8::from(value) as _
-    }
 }

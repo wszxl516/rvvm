@@ -3,27 +3,27 @@
 
 use super::bus::Bus;
 use super::error::OperationError;
+use super::operation::instruction_operation;
 use super::register::Register;
-use super::syscall_handler::syscall_handler;
-use crate::register::Generic;
+use crate::register::{Float, Generic};
 use colored::Colorize;
 use riscv::Op;
-pub type Gsr = Register<usize, 31>;
+pub type Gsr = Register<isize, 31>;
 pub type Fsr = Register<isize, 31>;
 
 pub struct Cpu {
-    pub x: Gsr,
-    pub f: Fsr,
+    generic: Gsr,
+    float: Fsr,
     pub mem: Box<dyn Bus>,
-    pc: usize,
+    pub pc: isize,
     is_debug: bool,
     pub running: bool,
 }
 impl Cpu {
     pub fn new(mem: impl Bus + 'static) -> Self {
         Self {
-            x: Gsr::new(),
-            f: Fsr::new(),
+            generic: Gsr::new(),
+            float: Fsr::new(),
             mem: Box::new(mem),
             pc: 0,
             is_debug: false,
@@ -31,13 +31,16 @@ impl Cpu {
         }
     }
     fn fetch_instruction(&mut self) -> anyhow::Result<(Op, u64, u32), OperationError> {
-        let bits: u16 = self.mem.load(self.pc)?;
+        let bits: u16 = self.mem.load(self.pc as usize)?;
         if bits & 3 == 3 {
             // The instruction will cross page boundary.
             if self.pc & 4095 == 4094 {
-                return Err(OperationError::IllegalInstruction(bits as _, self.pc));
+                return Err(OperationError::IllegalInstruction(
+                    bits as _,
+                    self.pc as usize,
+                ));
             }
-            let hi_bits: u16 = self.mem.load(self.pc + 2)?;
+            let hi_bits: u16 = self.mem.load((self.pc + 2) as usize)?;
             let bits = (hi_bits as u32) << 16 | bits as u32;
             let op = riscv::decode(bits);
             Ok((op, 4, bits))
@@ -46,7 +49,7 @@ impl Cpu {
             Ok((op, 2, bits as u32))
         }
     }
-    pub fn set_pc(&mut self, pc: usize) {
+    pub fn set_pc(&mut self, pc: isize) {
         self.pc = pc
     }
     pub fn set_debug(&mut self, debug: bool) {
@@ -55,13 +58,14 @@ impl Cpu {
     pub fn tick(&mut self) -> anyhow::Result<(), OperationError> {
         match self.fetch_instruction() {
             Ok((op, len, bits)) => match op {
-                Op::Illegal => return Err(OperationError::IllegalInstruction(bits, self.pc)),
+                Op::Illegal => {
+                    return Err(OperationError::IllegalInstruction(bits, self.pc as usize));
+                }
                 _ => {
                     if self.is_debug {
                         println!("{}", op.pretty_print(self.pc as u64, bits));
                     }
-                    instruction_operation(op, self)?;
-                    self.pc += len as usize;
+                    instruction_operation(op, self, len as isize)?;
                 }
             },
             Err(ee) => return Err(ee),
@@ -83,28 +87,26 @@ impl Cpu {
             }
         }
     }
-}
-
-pub fn instruction_operation(op: Op, cpu: &mut Cpu) -> anyhow::Result<(), OperationError> {
-    match op {
-        Op::Addi { rd, rs1, imm } => {
-            let src = cpu.x.get(Generic::from(rs1));
-            cpu.x.set(Generic::from(rd), src + imm as usize);
+    #[inline]
+    pub fn set_generic(&mut self, name: Generic, value: isize) {
+        if name != Generic::zero {
+            self.generic.set(name, value);
         }
-        Op::Auipc { rd, imm } => {
-            let address = cpu.pc as i64;
-            cpu.x
-                .set(Generic::from(rd), address.wrapping_add(imm as i64) as usize);
-        }
-        Op::Ld { rd, rs1, imm } => {
-            let src = cpu.x.get(Generic::from(rs1)) as isize + imm as isize;
-            let address: usize = cpu.mem.load(src as usize)?;
-            cpu.x.set(Generic::from(rd), address);
-        }
-        Op::Ecall => {
-            syscall_handler(cpu)?;
-        }
-        _ => {}
     }
-    Ok(())
+    #[inline]
+    pub fn get_generic(&self, name: Generic) -> isize {
+        if name != Generic::zero {
+            self.generic.get(name)
+        } else {
+            0
+        }
+    }
+    #[inline]
+    pub fn set_float(&mut self, name: Float, value: isize) {
+        self.float.set(name, value);
+    }
+    #[inline]
+    pub fn get_float(&self, name: Float) -> isize {
+        self.float.get(name)
+    }
 }

@@ -1,7 +1,7 @@
 use super::Csr;
 
 /// Ordering semantics for atomics.
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, PartialEq, Debug)]
 pub enum Ordering {
     Relaxed = 0,
     Release = 1,
@@ -27,7 +27,7 @@ impl From<Ordering> for MemOrder {
 /// * Increasing base opcode number
 /// * Increasing funct3 and then funct7, or their ordering in RISC-V spec
 #[rustfmt::skip]
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, PartialEq, Debug)]
 pub enum Op {
     Illegal,
     /* RV64I */

@@ -33,5 +33,15 @@ macro_rules! impl_numeric_enum {
                 value.into_value()
             }
         }
+        impl From<usize> for $name {
+            fn from(value: usize) -> Self {
+                $name::from(value as u8)
+            }
+        }
+        impl From<$name> for usize {
+            fn from(value: $name) -> Self {
+                $valtype::from(value) as _
+            }
+        }
     };
 }

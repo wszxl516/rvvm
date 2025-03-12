@@ -1,3 +1,5 @@
 /target
 /code.bin
 /code.elf
+/.vscode
+/.gdb_history
