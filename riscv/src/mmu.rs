@@ -28,12 +28,18 @@ pub struct PageWalkResult {
 impl PageWalkResult {
     #[inline]
     pub fn invalid() -> Self {
-        PageWalkResult { pte: 0, granularity: 0 }
+        PageWalkResult {
+            pte: 0,
+            granularity: 0,
+        }
     }
 
     #[inline]
     pub fn from_4k_pte(pte: u64) -> Self {
-        PageWalkResult { pte, granularity: 0 }
+        PageWalkResult {
+            pte,
+            granularity: 0,
+        }
     }
 
     /// Make up a fake 4K PTE for those that does not support multi-graunularity.
@@ -43,7 +49,10 @@ impl PageWalkResult {
     pub fn synthesise_4k(&self, vaddr: u64) -> Self {
         let page_index_within_superpage = (vaddr >> 12) & ((1 << (self.granularity * 9)) - 1);
         let pte = self.pte | page_index_within_superpage << 10;
-        Self { pte, granularity: 0 }
+        Self {
+            pte,
+            granularity: 0,
+        }
     }
 }
 
@@ -95,7 +104,10 @@ pub fn walk_page(satp: u64, vpn: u64, mut read_mem: impl FnMut(u64) -> u64) -> P
         if global {
             pte |= PTE_G;
         }
-        return PageWalkResult { pte, granularity: 2 - i };
+        return PageWalkResult {
+            pte,
+            granularity: 2 - i,
+        };
     }
 
     // Invalid if reached here

@@ -9,10 +9,9 @@ path = "src/lib.rs"
 
 [[bin]]
 name = "rvvm-test"
-path = "src/bin/main.rs"
+path = "src/main.rs"
 
 [dependencies]
-tokio = { version = "1.43.0", features = ["full"] }
 anyhow = "1.0.95"
 serde = { version = "1.0.217", features = ["derive"] }
 riscv = {path = "./riscv"}

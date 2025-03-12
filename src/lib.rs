@@ -1,14 +1,15 @@
 #![feature(new_range_api)]
-mod cpu;
 mod bus;
-mod register;
-mod memory;
+mod cpu;
 mod error;
+mod macros;
+mod memory;
+mod register;
 mod syscall;
-
-pub use cpu::Cpu;
+mod syscall_handler;
 pub use bus::{Bus, BusOperation};
-pub use register::{Generic, Register};
-pub use memory::Memory;
+pub use cpu::Cpu;
 pub use error::OperationError;
+pub use memory::Memory;
+pub use register::{Generic, Register};
 pub use syscall::Sysno;

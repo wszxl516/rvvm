@@ -148,7 +148,6 @@ macro_rules! syscall_enum {
     }
 }
 
-
 syscall_enum! {
     pub enum Sysno {
         /// See [io_setup(2)](https://man7.org/linux/man-pages/man2/io_setup.2.html) for more info on this syscall.
