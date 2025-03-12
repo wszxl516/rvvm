@@ -57,10 +57,10 @@ impl Cpu {
             Ok((op, len, bits)) => match op {
                 Op::Illegal => return Err(OperationError::IllegalInstruction(bits, self.pc)),
                 _ => {
-                    instruction_operation(op, self)?;
                     if self.is_debug {
                         println!("{}", op.pretty_print(self.pc as u64, bits));
                     }
+                    instruction_operation(op, self)?;
                     self.pc += len as usize;
                 }
             },
