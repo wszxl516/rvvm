@@ -11,4 +11,4 @@ _start: addi  a0, x0, 1      # 1 = StdOut
         ecall               # Call linux to terminate the program
 
 .data
-helloworld:      .ascii "Hello World!\n"
+helloworld:      .string "Hello World!\n"

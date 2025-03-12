@@ -2,12 +2,13 @@ ENTRY(_start);
 
 SECTIONS {
 	. = 0;
-	.text : ALIGN(4K) {
+	.text : ALIGN(16) {
 		*(.text);
 	}
-	.data : ALIGN(4K) {
+	.data : ALIGN(16) {
 		*(.rodata .rodata.*)
 		*(.data .data*);
+		*(.got*)
 	}
-	gnu : { *(.note.GNU-stack) *(.gnu_debuglink) *(.note.gnu.build-id*)  }
+	/DISCARD/ : { *(.note.GNU-stack) *(.gnu_debuglink) *(.note.gnu.build-id*)  }
 }
