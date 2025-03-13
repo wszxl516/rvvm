@@ -8,8 +8,8 @@ use super::register::Register;
 use crate::register::{Float, Generic};
 use colored::Colorize;
 use riscv::Op;
-pub type Gsr = Register<isize, 31>;
-pub type Fsr = Register<isize, 31>;
+pub type Gsr = Register<isize, 32>;
+pub type Fsr = Register<isize, 32>;
 
 pub struct Cpu {
     generic: Gsr,
